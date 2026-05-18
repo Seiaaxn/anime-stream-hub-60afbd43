@@ -156,54 +156,61 @@ function AnimeDetail() {
 
             {sortedEpisodes.length > 0 && (
               <section className="mt-6 rounded-2xl border border-border bg-card/70 p-5">
-                <h2 className="text-base font-black tracking-wider mb-3 uppercase flex items-center gap-3">
-                  <span className="h-5 w-1.5 rounded-full bg-primary" />
-                  Daftar Episode ({sortedEpisodes.length})
-                </h2>
-                <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {sortedEpisodes.map((e) => {
-                    const n = epNum(e.title);
-                    return (
-                      <li key={e.episodeId}>
-                        <Link
-                          to="/watch/$episodeId"
-                          params={{ episodeId: e.episodeId }}
-                          className="group block text-left relative w-full"
-                        >
-                          <div className="relative aspect-video rounded-xl overflow-hidden bg-secondary border border-border">
-                            {data.poster ? (
-                              <img
-                                src={data.poster}
-                                alt={cleanTitle(data.title)}
-                                loading="lazy"
-                                className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500"
-                              />
-                            ) : (
-                              <div className="w-full h-full grid place-items-center text-muted-foreground text-xs">No Image</div>
-                            )}
-                            <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none" />
-                            <span className="absolute left-2 top-2 px-2 py-0.5 rounded-md bg-primary/95 text-[10px] font-black text-primary-foreground">
-                              EP {n || e.title}
-                            </span>
-                            <div className="absolute inset-x-0 bottom-0 p-2.5">
-                              <p className="text-xs sm:text-sm font-bold line-clamp-2 group-hover:text-primary transition leading-snug text-white drop-shadow">
-                                Episode {n || e.title}
-                              </p>
-                              <p className="text-[10px] text-white/70 mt-0.5 flex items-center gap-1">
-                                <Clock className="h-3 w-3" /> {data.duration || "24 menit"}
-                              </p>
-                            </div>
-                            <div className="absolute inset-0 grid place-items-center opacity-0 group-hover:opacity-100 transition">
-                              <span className="h-12 w-12 rounded-full bg-primary/90 grid place-items-center glow-primary">
-                                <Play className="h-6 w-6 text-primary-foreground fill-current" />
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-base font-black tracking-wider uppercase flex items-center gap-3">
+                    <span className="h-5 w-1.5 rounded-full bg-primary" />
+                    Daftar Episode
+                  </h2>
+                  <span className="text-xs font-bold text-muted-foreground">
+                    {sortedEpisodes.length} Eps
+                  </span>
+                </div>
+                <div className="max-h-[640px] overflow-y-auto pr-2 -mr-2 scroll-smooth">
+                  <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                    {sortedEpisodes.map((e) => {
+                      const n = epNum(e.title);
+                      return (
+                        <li key={e.episodeId}>
+                          <Link
+                            to="/watch/$episodeId"
+                            params={{ episodeId: e.episodeId }}
+                            className="group block text-left relative w-full"
+                          >
+                            <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-secondary border border-border">
+                              {data.poster ? (
+                                <img
+                                  src={data.poster}
+                                  alt={cleanTitle(data.title)}
+                                  loading="lazy"
+                                  className="w-full h-full object-cover object-center group-hover:scale-110 transition duration-500"
+                                />
+                              ) : (
+                                <div className="w-full h-full grid place-items-center text-muted-foreground text-xs">No Image</div>
+                              )}
+                              <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none" />
+                              <span className="absolute left-2 top-2 px-2 py-0.5 rounded-md bg-primary/95 text-[10px] font-black text-primary-foreground">
+                                EP {n || e.title}
                               </span>
+                              <div className="absolute inset-x-0 bottom-0 p-2.5">
+                                <p className="text-xs sm:text-sm font-bold line-clamp-2 group-hover:text-primary transition leading-snug text-white drop-shadow">
+                                  Episode {n || e.title}
+                                </p>
+                                <p className="text-[10px] text-white/70 mt-0.5 flex items-center gap-1">
+                                  <Clock className="h-3 w-3" /> {data.duration || "24 menit"}
+                                </p>
+                              </div>
+                              <div className="absolute inset-0 grid place-items-center opacity-0 group-hover:opacity-100 transition">
+                                <span className="h-12 w-12 rounded-full bg-primary/90 grid place-items-center glow-primary">
+                                  <Play className="h-6 w-6 text-primary-foreground fill-current" />
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               </section>
             )}
           </>
