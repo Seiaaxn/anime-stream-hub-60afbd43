@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, ChevronDown, Server } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, ChevronDown, Server, ExternalLink, PlayCircle } from "lucide-react";
 import { svEpisode, svServer } from "@/lib/sankavollerei";
 import { toast } from "sonner";
 import { CommentBox } from "@/components/CommentBox";
@@ -24,10 +24,12 @@ function WatchPage() {
   const router = useRouter();
   const nav = useNavigate();
   const [activeServer, setActiveServer] = useState<string | null>(null);
+  const [activeServerLabel, setActiveServerLabel] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string | undefined>();
   const [loadingServer, setLoadingServer] = useState(false);
-  const [serverPickerOpen, setServerPickerOpen] = useState(false);
+  const [serverPickerOpen, setServerPickerOpen] = useState(true);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const [iframeFailed, setIframeFailed] = useState(false);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["episode", episodeId],
@@ -35,24 +37,40 @@ function WatchPage() {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Reset when switching episodes
   useEffect(() => {
-    if (data?.defaultStreamingUrl) setStreamUrl(data.defaultStreamingUrl);
-    // Open first group by default once data arrives
-    if (data?.servers?.length) {
-      setOpenGroups((g) =>
-        Object.keys(g).length ? g : { [data.servers[0].title]: true }
-      );
-    }
-  }, [data?.defaultStreamingUrl, data?.servers]);
+    setStreamUrl(undefined);
+    setActiveServer(null);
+    setActiveServerLabel(null);
+    setIframeFailed(false);
+  }, [episodeId]);
 
-  const pickServer = async (id: string) => {
+  useEffect(() => {
+    if (data?.defaultStreamingUrl && !streamUrl) {
+      setStreamUrl(data.defaultStreamingUrl);
+      setActiveServerLabel("Default");
+    }
+    // Open all quality groups by default
+    if (data?.servers?.length) {
+      setOpenGroups((g) => {
+        if (Object.keys(g).length) return g;
+        const next: Record<string, boolean> = {};
+        data.servers.forEach((s) => (next[s.title] = true));
+        return next;
+      });
+    }
+  }, [data, streamUrl]);
+
+  const pickServer = async (id: string, label: string) => {
     setLoadingServer(true);
     setActiveServer(id);
+    setIframeFailed(false);
     try {
       const url = await svServer(id);
       if (!url) throw new Error("Server tidak mengembalikan URL.");
       setStreamUrl(url);
-      toast.success("Server diganti.");
+      setActiveServerLabel(label);
+      toast.success(`Server ${label} aktif.`);
     } catch (e) {
       toast.error(`Gagal memuat server: ${(e as Error).message}`);
     } finally {
@@ -100,12 +118,18 @@ function WatchPage() {
                   src={streamUrl}
                   title={data.title}
                   allowFullScreen
-                  allow="autoplay; encrypted-media; picture-in-picture"
+                  referrerPolicy="no-referrer"
+                  allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"
+                  onError={() => setIframeFailed(true)}
                   className="w-full h-full"
                 />
               ) : (
-                <div className="absolute inset-0 grid place-items-center text-muted-foreground text-sm">
-                  Pilih server di bawah untuk mulai menonton.
+                <div className="absolute inset-0 grid place-items-center text-center text-muted-foreground text-sm p-6">
+                  <div>
+                    <PlayCircle className="h-10 w-10 mx-auto mb-2 text-primary" />
+                    Pilih salah satu server di bawah untuk mulai menonton.
+                  </div>
                 </div>
               )}
               {loadingServer && (
@@ -114,6 +138,28 @@ function WatchPage() {
                 </div>
               )}
             </div>
+
+            {streamUrl && (
+              <div className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                <span className="truncate">
+                  Sedang menonton via{" "}
+                  <span className="text-primary font-bold">{activeServerLabel || "Default"}</span>
+                </span>
+                <a
+                  href={streamUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-2 h-8 rounded-md border border-border hover:border-primary hover:text-primary transition"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" /> Buka di tab baru
+                </a>
+              </div>
+            )}
+            {iframeFailed && (
+              <p className="mt-2 text-xs text-destructive">
+                Server ini memblokir penyematan. Coba server lain atau buka di tab baru.
+              </p>
+            )}
 
             <h1 className="mt-4 text-lg sm:text-xl font-black">{data.title}</h1>
 
@@ -165,7 +211,7 @@ function WatchPage() {
                             {g.servers.map((s) => (
                               <button
                                 key={s.serverId}
-                                onClick={() => pickServer(s.serverId)}
+                                onClick={() => pickServer(s.serverId, `${g.title} • ${s.title}`)}
                                 className={`px-3 h-9 rounded-lg text-xs font-bold border transition ${
                                   activeServer === s.serverId
                                     ? "bg-primary text-primary-foreground border-primary glow-primary"
