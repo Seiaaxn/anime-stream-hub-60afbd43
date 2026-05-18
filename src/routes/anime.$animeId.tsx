@@ -166,7 +166,7 @@ function AnimeDetail() {
                   </span>
                 </div>
                 <div className="max-h-[540px] overflow-y-auto pr-2 -mr-2 scroll-smooth space-y-2">
-                  {sortedEpisodes.map((e, idx) => {
+                  {sortedEpisodes.map((e) => {
                     const n = epNum(e.title);
                     return (
                       <Link
