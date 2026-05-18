@@ -5,7 +5,7 @@ import server from "../dist/server/index.js";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 export const config = {
-  runtime: "nodejs22.x",
+  runtime: "nodejs",
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
