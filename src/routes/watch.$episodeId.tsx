@@ -211,7 +211,7 @@ function WatchPage() {
                             {g.servers.map((s) => (
                               <button
                                 key={s.serverId}
-                                onClick={() => pickServer(s.serverId)}
+                                onClick={() => pickServer(s.serverId, `${g.title} • ${s.title}`)}
                                 className={`px-3 h-9 rounded-lg text-xs font-bold border transition ${
                                   activeServer === s.serverId
                                     ? "bg-primary text-primary-foreground border-primary glow-primary"
