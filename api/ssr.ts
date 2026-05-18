@@ -1,7 +1,7 @@
 // Vercel serverless function — proxies all requests to the TanStack Start SSR handler.
 // The handler is the Web-standard fetch handler emitted by `vite build`.
 // @ts-expect-error - built artifact only exists after `vite build`
-import server from "../dist/server/server.js";
+import server from "../dist/server/index.js";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 export const config = {
