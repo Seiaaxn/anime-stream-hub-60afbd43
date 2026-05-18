@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, ChevronDown, Server } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, ChevronDown, Server, ExternalLink, PlayCircle } from "lucide-react";
 import { svEpisode, svServer } from "@/lib/sankavollerei";
 import { toast } from "sonner";
 import { CommentBox } from "@/components/CommentBox";
