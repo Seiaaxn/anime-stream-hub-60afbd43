@@ -32,7 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const webRequest = new Request(url.toString(), { method, headers, body });
 
   try {
-    const response = await (server as { fetch: (r: Request) => Promise<Response> }).fetch(webRequest);
+    const response = await (server as { fetch: (r: Request, env?: unknown, ctx?: unknown) => Promise<Response> }).fetch(webRequest, {}, {});
     response.headers.forEach((value, key) => res.setHeader(key, value));
     res.status(response.status);
     if (response.body) {
