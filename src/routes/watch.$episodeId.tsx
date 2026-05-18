@@ -118,12 +118,18 @@ function WatchPage() {
                   src={streamUrl}
                   title={data.title}
                   allowFullScreen
-                  allow="autoplay; encrypted-media; picture-in-picture"
+                  referrerPolicy="no-referrer"
+                  allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"
+                  onError={() => setIframeFailed(true)}
                   className="w-full h-full"
                 />
               ) : (
-                <div className="absolute inset-0 grid place-items-center text-muted-foreground text-sm">
-                  Pilih server di bawah untuk mulai menonton.
+                <div className="absolute inset-0 grid place-items-center text-center text-muted-foreground text-sm p-6">
+                  <div>
+                    <PlayCircle className="h-10 w-10 mx-auto mb-2 text-primary" />
+                    Pilih salah satu server di bawah untuk mulai menonton.
+                  </div>
                 </div>
               )}
               {loadingServer && (
@@ -132,6 +138,28 @@ function WatchPage() {
                 </div>
               )}
             </div>
+
+            {streamUrl && (
+              <div className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                <span className="truncate">
+                  Sedang menonton via{" "}
+                  <span className="text-primary font-bold">{activeServerLabel || "Default"}</span>
+                </span>
+                <a
+                  href={streamUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-2 h-8 rounded-md border border-border hover:border-primary hover:text-primary transition"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" /> Buka di tab baru
+                </a>
+              </div>
+            )}
+            {iframeFailed && (
+              <p className="mt-2 text-xs text-destructive">
+                Server ini memblokir penyematan. Coba server lain atau buka di tab baru.
+              </p>
+            )}
 
             <h1 className="mt-4 text-lg sm:text-xl font-black">{data.title}</h1>
 
