@@ -11,7 +11,7 @@
     }
   ],
   "functions": {
-    "api/ssr.ts": {
+    "api/**/*.ts": {
       "runtime": "nodejs22.x",
       "maxDuration": 30,
       "memory": 1024
