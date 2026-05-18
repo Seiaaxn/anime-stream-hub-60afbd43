@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useRouter, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Play, Star, Calendar, Tv, Loader2, Clock } from "lucide-react";
+import { ArrowLeft, Play, Star, Calendar, Tv, Loader2 } from "lucide-react";
 import { svDetail } from "@/lib/sankavollerei";
 import { cleanTitle } from "@/lib/title";
 
@@ -156,7 +156,7 @@ function AnimeDetail() {
 
             {sortedEpisodes.length > 0 && (
               <section className="mt-6 rounded-2xl border border-border bg-card/70 p-5">
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between mb-4">
                   <h2 className="text-base font-black tracking-wider uppercase flex items-center gap-3">
                     <span className="h-5 w-1.5 rounded-full bg-primary" />
                     Daftar Episode
@@ -165,51 +165,53 @@ function AnimeDetail() {
                     {sortedEpisodes.length} Eps
                   </span>
                 </div>
-                <div className="max-h-[640px] overflow-y-auto pr-2 -mr-2 scroll-smooth">
-                  <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                    {sortedEpisodes.map((e) => {
-                      const n = epNum(e.title);
-                      return (
-                        <li key={e.episodeId}>
-                          <Link
-                            to="/watch/$episodeId"
-                            params={{ episodeId: e.episodeId }}
-                            className="group block text-left relative w-full"
-                          >
-                            <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-secondary border border-border">
-                              {data.poster ? (
-                                <img
-                                  src={data.poster}
-                                  alt={cleanTitle(data.title)}
-                                  loading="lazy"
-                                  className="w-full h-full object-cover object-center group-hover:scale-110 transition duration-500"
-                                />
-                              ) : (
-                                <div className="w-full h-full grid place-items-center text-muted-foreground text-xs">No Image</div>
-                              )}
-                              <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none" />
-                              <span className="absolute left-2 top-2 px-2 py-0.5 rounded-md bg-primary/95 text-[10px] font-black text-primary-foreground">
-                                EP {n || e.title}
-                              </span>
-                              <div className="absolute inset-x-0 bottom-0 p-2.5">
-                                <p className="text-xs sm:text-sm font-bold line-clamp-2 group-hover:text-primary transition leading-snug text-white drop-shadow">
-                                  Episode {n || e.title}
-                                </p>
-                                <p className="text-[10px] text-white/70 mt-0.5 flex items-center gap-1">
-                                  <Clock className="h-3 w-3" /> {data.duration || "24 menit"}
-                                </p>
-                              </div>
-                              <div className="absolute inset-0 grid place-items-center opacity-0 group-hover:opacity-100 transition">
-                                <span className="h-12 w-12 rounded-full bg-primary/90 grid place-items-center glow-primary">
-                                  <Play className="h-6 w-6 text-primary-foreground fill-current" />
-                                </span>
-                              </div>
-                            </div>
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                <div className="max-h-[540px] overflow-y-auto pr-2 -mr-2 scroll-smooth space-y-2">
+                  {sortedEpisodes.map((e) => {
+                    const n = epNum(e.title);
+                    return (
+                      <Link
+                        key={e.episodeId}
+                        to="/watch/$episodeId"
+                        params={{ episodeId: e.episodeId }}
+                        className="group flex items-center gap-4 rounded-xl border border-border bg-background/60 hover:bg-secondary/60 transition p-3"
+                      >
+                        {/* Thumbnail */}
+                        <div className="relative shrink-0 w-24 sm:w-32 aspect-video rounded-lg overflow-hidden bg-secondary border border-border">
+                          {data.poster ? (
+                            <img
+                              src={data.poster}
+                              alt={cleanTitle(data.title)}
+                              loading="lazy"
+                              className="w-full h-full object-cover object-center opacity-70 group-hover:opacity-100 group-hover:scale-105 transition duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full grid place-items-center text-muted-foreground text-[10px]">No Image</div>
+                          )}
+                          <div className="absolute inset-0 grid place-items-center">
+                            <span className="h-8 w-8 rounded-full bg-primary/90 grid place-items-center opacity-0 group-hover:opacity-100 transition shadow-lg">
+                              <Play className="h-4 w-4 text-primary-foreground fill-current" />
+                            </span>
+                          </div>
+                          <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-black text-white">
+                            {data.duration || "24m"}
+                          </span>
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
+                            Episode {n || e.title}
+                          </p>
+                          <p className="text-sm sm:text-base font-bold line-clamp-1 group-hover:text-primary transition mt-0.5">
+                            {e.title || `Episode ${n}`}
+                          </p>
+                        </div>
+
+                        {/* Arrow */}
+                        <Play className="h-4 w-4 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 group-hover:text-primary transition" />
+                      </Link>
+                    );
+                  })}
                 </div>
               </section>
             )}
