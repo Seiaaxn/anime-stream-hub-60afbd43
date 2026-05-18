@@ -24,10 +24,12 @@ function WatchPage() {
   const router = useRouter();
   const nav = useNavigate();
   const [activeServer, setActiveServer] = useState<string | null>(null);
+  const [activeServerLabel, setActiveServerLabel] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string | undefined>();
   const [loadingServer, setLoadingServer] = useState(false);
-  const [serverPickerOpen, setServerPickerOpen] = useState(false);
+  const [serverPickerOpen, setServerPickerOpen] = useState(true);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const [iframeFailed, setIframeFailed] = useState(false);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["episode", episodeId],
@@ -35,24 +37,40 @@ function WatchPage() {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Reset when switching episodes
   useEffect(() => {
-    if (data?.defaultStreamingUrl) setStreamUrl(data.defaultStreamingUrl);
-    // Open first group by default once data arrives
-    if (data?.servers?.length) {
-      setOpenGroups((g) =>
-        Object.keys(g).length ? g : { [data.servers[0].title]: true }
-      );
-    }
-  }, [data?.defaultStreamingUrl, data?.servers]);
+    setStreamUrl(undefined);
+    setActiveServer(null);
+    setActiveServerLabel(null);
+    setIframeFailed(false);
+  }, [episodeId]);
 
-  const pickServer = async (id: string) => {
+  useEffect(() => {
+    if (data?.defaultStreamingUrl && !streamUrl) {
+      setStreamUrl(data.defaultStreamingUrl);
+      setActiveServerLabel("Default");
+    }
+    // Open all quality groups by default
+    if (data?.servers?.length) {
+      setOpenGroups((g) => {
+        if (Object.keys(g).length) return g;
+        const next: Record<string, boolean> = {};
+        data.servers.forEach((s) => (next[s.title] = true));
+        return next;
+      });
+    }
+  }, [data, streamUrl]);
+
+  const pickServer = async (id: string, label: string) => {
     setLoadingServer(true);
     setActiveServer(id);
+    setIframeFailed(false);
     try {
       const url = await svServer(id);
       if (!url) throw new Error("Server tidak mengembalikan URL.");
       setStreamUrl(url);
-      toast.success("Server diganti.");
+      setActiveServerLabel(label);
+      toast.success(`Server ${label} aktif.`);
     } catch (e) {
       toast.error(`Gagal memuat server: ${(e as Error).message}`);
     } finally {
