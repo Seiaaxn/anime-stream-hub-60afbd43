@@ -4,6 +4,7 @@
 import server from "../dist/server/index.js";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
+// Yang diubah: config harus kosong. Jangan ada runtime di sini.
 export const config = {};
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
